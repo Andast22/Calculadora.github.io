@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Atmosférica con Conversiones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(-45deg, #220025, #3a0d40, #ffffff, #16213e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: rgb(0, 0, 0);
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        h1 {
+            color: #ffffff;
+            text-align: center;
+        }
+        .calculator {
+            background-color: rgb(193, 234, 245);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .converter {
+            background-color: rgb(200, 245, 193);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-radius: 4px;
+        }
+        .formula {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-left: 4px solid #3498db;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #fad1fa;
+            cursor: pointer;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        .tab:hover {
+            background-color: #bac9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.889);
+        }
+        .tab.active {
+            background-color: rgb(164, 228, 255);
+            font-weight: bold;
+        }
+        .tab.active:hover {
+            background-color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .formula-selector {
+            margin-bottom: 15px;
+        }
+        .formula-option {
+            display: none;
+        }
+        .formula-option.active {
+            display: block;
+        }
+        .steps {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 4px;
+        }
+        .step {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .step:last-child {
+            border-bottom: none;
+        }
+        .toggle-steps {
+            background-color: #2ecc71;
+        }
+        .toggle-steps:hover {
+            background-color: #27ae60;
+        }
+        .hidden {
+            display: none;
+        }
+        .final-result {
+            font-weight: bold;
+            color: #3134e9;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #3498db;
+        }
+        .conversion-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .conversion-group input {
+            flex: 1;
+        }
+        .conversion-group select {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculadora Atmosférica con Conversiones</h1>
+    
+    <div class="tab-container">
+        <div class="tab active" onclick="openTab(event, 'isa')">Temperatura ISA</div>
+        <div class="tab" onclick="openTab(event, 'ambiente')">Temperatura Ambiente</div>
+        <div class="tab" onclick="openTab(event, 'desviacion')">Desviación ISA</div>
+        <div class="tab" onclick="openTab(event, 'altitud')">Altitud</div>
+        <div class="tab" onclick="openTab(event, 'conversiones')">Conversiones</div>
+    </div>
+    
+    <div id="isa" class="tab-content active">
+        <div class="calculator">
+            <h2>Cálculo de Temperatura ISA</h2>
+            
+            <div class="formula-selector">
+                <label for="formula-select">Seleccione la fórmula:</label>
+                <select id="formula-select" onchange="changeISAFormula()">
+                    <option value="altitud">Por altitud</option>
+                    <option value="ambiente">Por temperatura ambiente y desviación</option>
+                </select>
+            </div>
+            
+            <div id="formula-altitud" class="formula-option active">
+                <div class="formula">
+                    Temp ISA = 15 - (altitud × 2 / 1000)
+                </div>
+                <div class="form-group">
+                    <label for="altitud-isa">Altitud (pies):</label>
+                    <input type="number" id="altitud-isa" placeholder="Ingrese la altitud en pies">
+                </div>
+            </div>
+            
+            <div id="formula-ambiente" class="formula-option">
+                <div class="formula">
+                    Temp ISA = Temperatura Ambiente - Desviación ISA
+                </div>
+                <div class="form-group">
+                    <label for="temperatura-ambiente-isa">Temperatura Ambiente (°C):</label>
+                    <input type="number" id="temperatura-ambiente-isa" placeholder="Ingrese la temperatura ambiente">
+                </div>
+                <div class="form-group">
+                    <label for="desviacion-isa">Desviación ISA (°C):</label>
+                    <input type="number" id="desviacion-isa" placeholder="Ingrese la desviación ISA">
+                </div>
+            </div>
+            
+            <button onclick="calcularTemperaturaISA()">Calcular</button>
+            <button class="toggle-steps" onclick="toggleSteps('isa-steps')">Mostrar/Ocultar Pasos</button>
+            
+            <div id="result-isa" class="result" style="display: none;">
+                <div id="isa-steps" class="steps hidden"></div>
+                <div id="isa-final-result" class="final-result"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="ambiente" class="tab-content">
+        <div class="calculator">
+            <h2>Cálculo de Temperatura Ambiente</h2>
+            <div class="formula">
+                Temp Ambiente = Desviación ISA + Temperatura ISA
+            </div>
+            <div class="form-group">
+                <label for="desviacion-ambiente">Desviación ISA (°C):</label>
+                <input type="number" id="desviacion-ambiente" placeholder="Ingrese la desviación ISA">
+            </div>
+            <div class="form-group">
+                <label for="temperatura-isa-ambiente">Temperatura ISA (°C):</label>
+                <input type="number" id="temperatura-isa-ambiente" placeholder="Ingrese la temperatura ISA">
+            </div>
+            
+            <button onclick="calcularTemperaturaAmbiente()">Calcular</button>
+            <button class="toggle-steps" onclick="toggleSteps('ambiente-steps')">Mostrar/Ocultar Pasos</button>
+            
+            <div id="result-ambiente" class="result" style="display: none;">
+                <div id="ambiente-steps" class="steps hidden"></div>
+                <div id="ambiente-final-result" class="final-result"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="desviacion" class="tab-content">
+        <div class="calculator">
+            <h2>Cálculo de Desviación ISA</h2>
+            <div class="formula">
+                Desviación ISA = Temperatura Ambiente - Temperatura ISA
+            </div>
+            <div class="form-group">
+                <label for="temperatura-ambiente-desviacion">Temperatura Ambiente (°C):</label>
+                <input type="number" id="temperatura-ambiente-desviacion" placeholder="Ingrese la temperatura ambiente">
+            </div>
+            <div class="form-group">
+                <label for="temperatura-isa-desviacion">Temperatura ISA (°C):</label>
+                <input type="number" id="temperatura-isa-desviacion" placeholder="Ingrese la temperatura ISA">
+            </div>
+            
+            <button onclick="calcularDesviacionISA()">Calcular</button>
+            <button class="toggle-steps" onclick="toggleSteps('desviacion-steps')">Mostrar/Ocultar Pasos</button>
+            
+            <div id="result-desviacion" class="result" style="display: none;">
+                <div id="desviacion-steps" class="steps hidden"></div>
+                <div id="desviacion-final-result" class="final-result"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="altitud" class="tab-content">
+        <div class="calculator">
+            <h2>Cálculo de Altitud</h2>
+            <div class="formula">
+                Altitud = ((15 - Tem ISA)/2) × 1000
+            </div>
+            <div class="form-group">
+                <label for="temperatura-isa-altitud">Temperatura ISA (°C):</label>
+                <input type="number" id="temperatura-isa-altitud" placeholder="Ingrese la temperatura ISA">
+            </div>
+            
+            <button onclick="calcularAltitud()">Calcular</button>
+            <button class="toggle-steps" onclick="toggleSteps('altitud-steps')">Mostrar/Ocultar Pasos</button>
+            
+            <div id="result-altitud" class="result" style="display: none;">
+                <div id="altitud-steps" class="steps hidden"></div>
+                <div id="altitud-final-result" class="final-result"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="conversiones" class="tab-content">
+        <div class="converter">
+            <h2>Conversión de Temperatura</h2>
+            <div class="form-group conversion-group">
+                <input type="number" id="temp-input" placeholder="Ingrese temperatura">
+                <select id="temp-from">
+                    <option value="c">Celsius (°C)</option>
+                    <option value="f">Fahrenheit (°F)</option>
+                </select>
+                <span>a</span>
+                <select id="temp-to">
+                    <option value="f">Fahrenheit (°F)</option>
+                    <option value="c">Celsius (°C)</option>
+                </select>
+                <button onclick="convertTemperature()">Convertir</button>
+            </div>
+            <div id="temp-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="converter">
+            <h2>Conversión de Distancia</h2>
+            <div class="form-group conversion-group">
+                <input type="number" id="dist-input" placeholder="Ingrese distancia">
+                <select id="dist-from">
+                    <option value="m">Metros (m)</option>
+                    <option value="ft">Pies (ft)</option>
+                    <option value="nm">Millas Náuticas (nm)</option>
+                </select>
+                <span>a</span>
+                <select id="dist-to">
+                    <option value="nm">Millas Náuticas (nm)</option>
+                    <option value="m">Metros (m)</option>
+                    <option value="ft">Pies (ft)</option>
+                </select>
+                <button onclick="convertDistance()">Convertir</button>
+            </div>
+            <div id="dist-result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].className = tabcontent[i].className.replace(" active", "");
+            }
+            
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+        
+        function changeISAFormula() {
+            const formulaSelect = document.getElementById("formula-select");
+            const formulaAltitud = document.getElementById("formula-altitud");
+            const formulaAmbiente = document.getElementById("formula-ambiente");
+            
+            if (formulaSelect.value === "altitud") {
+                formulaAltitud.classList.add("active");
+                formulaAmbiente.classList.remove("active");
+            } else {
+                formulaAltitud.classList.remove("active");
+                formulaAmbiente.classList.add("active");
+            }
+        }
+        
+        function toggleSteps(stepId) {
+            const stepsDiv = document.getElementById(stepId);
+            stepsDiv.classList.toggle("hidden");
+        }
+        
+        // Funciones de conversión
+        function formatNumber(num) {
+            // Verificar si el número es entero
+            if (Number.isInteger(num)) {
+                return num.toString();
+            } else {
+                // Redondear a máximo 4 decimales sin eliminar ceros significativos
+                const str = num.toString();
+                const decimalIndex = str.indexOf('.');
+            
+                if (decimalIndex !== -1) {
+                    const decimalPart = str.substring(decimalIndex + 1);
+                    if (decimalPart.length > 4) {
+                        // Cortar a 4 decimales sin redondear
+                        return str.substring(0, decimalIndex + 5);
+                    }
+                }
+                return str;
+            }
+        }
+
+        // Modificar las funciones de cálculo para usar el nuevo formateo
+        function calcularTemperaturaISA() {
+            const formulaSelect = document.getElementById("formula-select");
+            const resultDiv = document.getElementById("result-isa");
+            const stepsDiv = document.getElementById("isa-steps");
+            const finalResultDiv = document.getElementById("isa-final-result");
+            
+            stepsDiv.innerHTML = "";
+            resultDiv.style.display = "none";
+            
+            if (formulaSelect.value === "altitud") {
+                const altitud = parseFloat(document.getElementById("altitud-isa").value);
+                
+                if (isNaN(altitud)) {
+                    alert("Por favor ingrese una altitud válida");
+                    return;
+                }
+                
+                stepsDiv.innerHTML += `<div class="step"><strong>Fórmula:</strong> Tem ISA = 15 - (altitud × 2 / 1000)</div>`;
+                stepsDiv.innerHTML += `<div class="step"><strong>Paso 1:</strong> Sustituir valores<br>Tem ISA = 15 - (${formatNumber(altitud)} × 2 / 1000)</div>`;
+                
+                const calculoParcial = (altitud * 2) / 1000;
+                stepsDiv.innerHTML += `<div class="step"><strong>Paso 2:</strong> Calcular (altitud × 2 / 1000)<br>(${formatNumber(altitud)} × 2 / 1000) = ${formatNumber(calculoParcial)}</div>`;
+                
+                const temperaturaISA = 15 - calculoParcial;
+                stepsDiv.innerHTML += `<div class="step"><strong>Paso 3:</strong> Calcular 15 - resultado anterior<br>15 - ${formatNumber(calculoParcial)} = ${formatNumber(temperaturaISA)}</div>`;
+                
+                finalResultDiv.innerHTML = `La temperatura ISA a ${formatNumber(altitud)} pies es: <strong>${formatNumber(temperaturaISA)} °C</strong>`;
+            } else {
+                const temperaturaAmbiente = parseFloat(document.getElementById("temperatura-ambiente-isa").value);
+                const desviacionISA = parseFloat(document.getElementById("desviacion-isa").value);
+                
+                if (isNaN(temperaturaAmbiente) || isNaN(desviacionISA)) {
+                    alert("Por favor ingrese valores válidos");
+                    return;
+                }
+                
+                stepsDiv.innerHTML += `<div class="step"><strong>Fórmula:</strong> Tem ISA = Temperatura Ambiente - Desviación ISA</div>`;
+                stepsDiv.innerHTML += `<div class="step"><strong>Paso 1:</strong> Sustituir valores<br>Tem ISA = ${formatNumber(temperaturaAmbiente)} - ${formatNumber(desviacionISA)}</div>`;
+                
+                const temperaturaISA = temperaturaAmbiente - desviacionISA;
+                stepsDiv.innerHTML += `<div class="step"><strong>Paso 2:</strong> Realizar resta<br>${formatNumber(temperaturaAmbiente)} - ${formatNumber(desviacionISA)} = ${formatNumber(temperaturaISA)}</div>`;
+                
+                finalResultDiv.innerHTML = `La temperatura ISA es: <strong>${formatNumber(temperaturaISA)} °C</strong> (calculada desde temperatura ambiente ${formatNumber(temperaturaAmbiente)} °C y desviación ISA ${formatNumber(desviacionISA)} °C)`;
+            }
+            
+            resultDiv.style.display = "block";
+        }
+
+        // Aplicar el mismo formato a las demás funciones de cálculo
+        function calcularTemperaturaAmbiente() {
+            const desviacionISA = parseFloat(document.getElementById("desviacion-ambiente").value);
+            const temperaturaISA = parseFloat(document.getElementById("temperatura-isa-ambiente").value);
+            const stepsDiv = document.getElementById("ambiente-steps");
+            const finalResultDiv = document.getElementById("ambiente-final-result");
+            
+            stepsDiv.innerHTML = "";
+            document.getElementById("result-ambiente").style.display = "none";
+            
+            if (isNaN(desviacionISA) || isNaN(temperaturaISA)) {
+                alert("Por favor ingrese valores válidos");
+                return;
+            }
+            
+            stepsDiv.innerHTML += `<div class="step"><strong>Fórmula:</strong> Tem Ambiente = Desviación ISA + Temperatura ISA</div>`;
+            stepsDiv.innerHTML += `<div class="step"><strong>Paso 1:</strong> Sustituir valores<br>Tem Ambiente = ${formatNumber(desviacionISA)} + ${formatNumber(temperaturaISA)}</div>`;
+            
+            const temperaturaAmbiente = desviacionISA + temperaturaISA;
+            stepsDiv.innerHTML += `<div class="step"><strong>Paso 2:</strong> Realizar suma<br>${formatNumber(desviacionISA)} + ${formatNumber(temperaturaISA)} = ${formatNumber(temperaturaAmbiente)}</div>`;
+            
+            finalResultDiv.innerHTML = `La temperatura ambiente es: <strong>${formatNumber(temperaturaAmbiente)} °C</strong>`;
+            document.getElementById("result-ambiente").style.display = "block";
+        }
+
+        function calcularDesviacionISA() {
+            const temperaturaAmbiente = parseFloat(document.getElementById("temperatura-ambiente-desviacion").value);
+            const temperaturaISA = parseFloat(document.getElementById("temperatura-isa-desviacion").value);
+            const stepsDiv = document.getElementById("desviacion-steps");
+            const finalResultDiv = document.getElementById("desviacion-final-result");
+            
+            stepsDiv.innerHTML = "";
+            document.getElementById("result-desviacion").style.display = "none";
+            
+            if (isNaN(temperaturaAmbiente) || isNaN(temperaturaISA)) {
+                alert("Por favor ingrese valores válidos");
+                return;
+            }
+            
+            stepsDiv.innerHTML += `<div class="step"><strong>Fórmula:</strong> Desviación ISA = Temperatura Ambiente - Temperatura ISA</div>`;
+            stepsDiv.innerHTML += `<div class="step"><strong>Paso 1:</strong> Sustituir valores<br>Desviación ISA = ${formatNumber(temperaturaAmbiente)} - ${formatNumber(temperaturaISA)}</div>`;
+            
+            const desviacionISA = temperaturaAmbiente - temperaturaISA;
+            stepsDiv.innerHTML += `<div class="step"><strong>Paso 2:</strong> Realizar resta<br>${formatNumber(temperaturaAmbiente)} - ${formatNumber(temperaturaISA)} = ${formatNumber(desviacionISA)}</div>`;
+            
+            finalResultDiv.innerHTML = `La desviación ISA es: <strong>${formatNumber(desviacionISA)} °C</strong>`;
+            document.getElementById("result-desviacion").style.display = "block";
+        }
+
+        function calcularAltitud() {
+            const temperaturaISA = parseFloat(document.getElementById("temperatura-isa-altitud").value);
+            const stepsDiv = document.getElementById("altitud-steps");
+            const finalResultDiv = document.getElementById("altitud-final-result");
+            
+            stepsDiv.innerHTML = "";
+            document.getElementById("result-altitud").style.display = "none";
+            
+            if (isNaN(temperaturaISA)) {
+                alert("Por favor ingrese una temperatura ISA válida");
+                return;
+            }
+            
+            stepsDiv.innerHTML += `<div class="step"><strong>Fórmula:</strong> h = ((15 - Tem ISA)/2) × 1000</div>`;
+            stepsDiv.innerHTML += `<div class="step"><strong>Paso 1:</strong> Calcular (15 - Tem ISA)<br>15 - ${formatNumber(temperaturaISA)} = ${formatNumber(15 - temperaturaISA)}</div>`;
+            
+            const paso1 = 15 - temperaturaISA;
+            stepsDiv.innerHTML += `<div class="step"><strong>Paso 2:</strong> Dividir entre 2<br>${formatNumber(paso1)} / 2 = ${formatNumber(paso1 / 2)}</div>`;
+            
+            const paso2 = paso1 / 2;
+            stepsDiv.innerHTML += `<div class="step"><strong>Paso 3:</strong> Multiplicar por 1000<br>${formatNumber(paso2)} × 1000 = ${formatNumber(paso2 * 1000)}</div>`;
+            
+            const altitud = paso2 * 1000;
+            finalResultDiv.innerHTML = `La altitud correspondiente es: <strong>${formatNumber(altitud)} pies</strong>`;
+            document.getElementById("result-altitud").style.display = "block";
+        }
+
+        // Modificar también las funciones de conversión
+        function convertTemperature() {
+            const input = parseFloat(document.getElementById("temp-input").value);
+            const from = document.getElementById("temp-from").value;
+            const to = document.getElementById("temp-to").value;
+            const resultDiv = document.getElementById("temp-result");
+            
+            if (isNaN(input)) {
+                alert("Por favor ingrese un valor numérico");
+                return;
+            }
+            
+            let result;
+            let formula;
+            
+            if (from === 'c' && to === 'f') {
+                result = (input * 9/5) + 32;
+                formula = `${formatNumber(input)}°C × (9/5) + 32 = ${formatNumber(result)}°F`;
+            } else if (from === 'f' && to === 'c') {
+                result = (input - 32) * 5/9;
+                formula = `(${formatNumber(input)}°F - 32) × (5/9) = ${formatNumber(result)}°C`;
+            } else {
+                result = input;
+                formula = `No se requiere conversión`;
+            }
+            
+            resultDiv.innerHTML = `
+                <div class="step"><strong>Fórmula:</strong> ${formula}</div>
+                <div class="final-result">Resultado: <strong>${formatNumber(result)} ${to === 'c' ? '°C' : '°F'}</strong></div>
+            `;
+            resultDiv.style.display = "block";
+        }
+        
+        function convertDistance() {
+            const input = parseFloat(document.getElementById("dist-input").value);
+            const from = document.getElementById("dist-from").value;
+            const to = document.getElementById("dist-to").value;
+            const resultDiv = document.getElementById("dist-result");
+            
+            if (isNaN(input)) {
+                alert("Por favor ingrese un valor numérico");
+                return;
+            }
+            
+            let inMeters;
+            let fromUnit, toUnit;
+            
+            switch (from) {
+                case 'm':
+                    inMeters = input;
+                    fromUnit = 'metros';
+                    break;
+                case 'ft':
+                    inMeters = input * 0.3048;
+                    fromUnit = 'pies';
+                    break;
+                case 'nm':
+                    inMeters = input * 1852;
+                    fromUnit = 'millas náuticas';
+                    break;
+            }
+            
+            let result;
+            let formula;
+            
+            switch (to) {
+                case 'm':
+                    result = inMeters;
+                    toUnit = 'metros';
+                    formula = `${formatNumber(input)} ${fromUnit} = ${formatNumber(result)} ${toUnit}`;
+                    break;
+                case 'ft':
+                    result = inMeters / 0.3048;
+                    toUnit = 'pies';
+                    formula = `${formatNumber(input)} ${fromUnit} = ${formatNumber(inMeters)} m / 0.3048 = ${formatNumber(result)} ${toUnit}`;
+                    break;
+                case 'nm':
+                    result = inMeters / 1852;
+                    toUnit = 'millas náuticas';
+                    formula = `${formatNumber(input)} ${fromUnit} = ${formatNumber(inMeters)} m / 1852 = ${formatNumber(result)} ${toUnit}`;
+                    break;
+            }
+            
+            resultDiv.innerHTML = `
+                <div class="step"><strong>Fórmula:</strong> ${formula}</div>
+                <div class="final-result">Resultado: <strong>${formatNumber(result)} ${toUnit}</strong></div>
+            `;
+            resultDiv.style.display = "block";
+        }
+    </script>
+</body>
+</html>
