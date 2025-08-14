@@ -306,10 +306,14 @@
                     <option value="c">Celsius (°C)</option>
                 </select>
                 <button onclick="convertTemperature()">Convertir</button>
+                <button class="toggle-steps" onclick="toggleSteps('temp-steps')">Mostrar/Ocultar Pasos</button>
             </div>
-            <div id="temp-result" class="result" style="display: none;"></div>
+            <div id="temp-result" class="result" style="display: none;">
+                <div id="temp-steps" class="steps hidden"></div>
+                <div class="final-result"></div>
+            </div>
         </div>
-        
+    
         <div class="converter">
             <h2>Conversión de Distancia</h2>
             <div class="form-group conversion-group">
@@ -326,8 +330,12 @@
                     <option value="ft">Pies (ft)</option>
                 </select>
                 <button onclick="convertDistance()">Convertir</button>
+                <button class="toggle-steps" onclick="toggleSteps('dist-steps')">Mostrar/Ocultar Pasos</button>
             </div>
-            <div id="dist-result" class="result" style="display: none;"></div>
+            <div id="dist-result" class="result" style="display: none;">
+                <div id="dist-steps" class="steps hidden"></div>
+                <div class="final-result"></div>
+            </div>
         </div>
     </div>
 
@@ -520,87 +528,117 @@
             const from = document.getElementById("temp-from").value;
             const to = document.getElementById("temp-to").value;
             const resultDiv = document.getElementById("temp-result");
-            
+            const stepsDiv = document.getElementById("temp-steps");
+            const finalResultDiv = resultDiv.querySelector('.final-result');
+    
+            stepsDiv.innerHTML = "";
+            resultDiv.style.display = "none";
+    
             if (isNaN(input)) {
                 alert("Por favor ingrese un valor numérico");
                 return;
             }
-            
-            let result;
-            let formula;
-            
+    
+            let result, formula, steps;
+    
             if (from === 'c' && to === 'f') {
                 result = (input * 9/5) + 32;
-                formula = `${formatNumber(input)}°C × (9/5) + 32 = ${formatNumber(result)}°F`;
+                formula = "°F = (°C × 9/5) + 32";
+                steps = `
+                    <div class="step"><strong>Paso 1:</strong> Multiplicar por 9/5<br>${formatNumber(input)} × 9/5 = ${formatNumber(input * 9/5)}</div>
+                    <div class="step"><strong>Paso 2:</strong> Sumar 32<br>${formatNumber(input * 9/5)} + 32 = ${formatNumber(result)}</div>
+                `;
             } else if (from === 'f' && to === 'c') {
-                result = (input - 32) * 5/9;
-                formula = `(${formatNumber(input)}°F - 32) × (5/9) = ${formatNumber(result)}°C`;
+            result = (input - 32) * 5/9;
+                formula = "°C = (°F - 32) × 5/9";
+                steps = `
+                    <div class="step"><strong>Paso 1:</strong> Restar 32<br>${formatNumber(input)} - 32 = ${formatNumber(input - 32)}</div>
+                    <div class="step"><strong>Paso 2:</strong> Multiplicar por 5/9<br>${formatNumber(input - 32)} × 5/9 = ${formatNumber(result)}</div>
+                `;
             } else {
                 result = input;
-                formula = `No se requiere conversión`;
+                formula = "No se requiere conversión";
+                steps = `<div class="step">Las unidades de origen y destino son las mismas</div>`;
             }
-            
-            resultDiv.innerHTML = `
+    
+            stepsDiv.innerHTML = `
                 <div class="step"><strong>Fórmula:</strong> ${formula}</div>
-                <div class="final-result">Resultado: <strong>${formatNumber(result)} ${to === 'c' ? '°C' : '°F'}</strong></div>
+                ${steps}
             `;
+    
+            finalResultDiv.innerHTML = `Resultado: <strong>${formatNumber(result)} ${to === 'c' ? '°C' : '°F'}</strong>`;
             resultDiv.style.display = "block";
         }
-        
+
         function convertDistance() {
             const input = parseFloat(document.getElementById("dist-input").value);
             const from = document.getElementById("dist-from").value;
             const to = document.getElementById("dist-to").value;
             const resultDiv = document.getElementById("dist-result");
-            
+            const stepsDiv = document.getElementById("dist-steps");
+            const finalResultDiv = resultDiv.querySelector('.final-result');
+    
+            stepsDiv.innerHTML = "";
+            resultDiv.style.display = "none";
+    
             if (isNaN(input)) {
                 alert("Por favor ingrese un valor numérico");
                 return;
             }
-            
-            let inMeters;
+    
+            let inMeters, result, formula, steps;
             let fromUnit, toUnit;
-            
+    
+            // Paso 1: Convertir a metros (unidad intermedia)
             switch (from) {
                 case 'm':
                     inMeters = input;
                     fromUnit = 'metros';
+                    steps = `<div class="step"><strong>Paso 1:</strong> Valor ya en metros<br>${formatNumber(input)} m</div>`;
                     break;
                 case 'ft':
                     inMeters = input * 0.3048;
                     fromUnit = 'pies';
+                    steps = `<div class="step"><strong>Paso 1:</strong> Convertir pies a metros (1 ft = 0.3048 m)<br>${formatNumber(input)} ft × 0.3048 = ${formatNumber(inMeters)} m</div>`;
                     break;
                 case 'nm':
                     inMeters = input * 1852;
                     fromUnit = 'millas náuticas';
+                    steps = `<div class="step"><strong>Paso 1:</strong> Convertir millas náuticas a metros (1 nm = 1852 m)<br>${formatNumber(input)} nm × 1852 = ${formatNumber(inMeters)} m</div>`;
                     break;
             }
-            
-            let result;
-            let formula;
-            
+    
+            // Paso 2: Convertir de metros a la unidad destino
             switch (to) {
                 case 'm':
                     result = inMeters;
                     toUnit = 'metros';
-                    formula = `${formatNumber(input)} ${fromUnit} = ${formatNumber(result)} ${toUnit}`;
+                    formula = `1 m = 1 m`;
+                    steps += `<div class="step"><strong>Paso 2:</strong> Valor ya en metros<br>${formatNumber(inMeters)} m</div>`;
                     break;
                 case 'ft':
                     result = inMeters / 0.3048;
                     toUnit = 'pies';
-                    formula = `${formatNumber(input)} ${fromUnit} = ${formatNumber(inMeters)} m / 0.3048 = ${formatNumber(result)} ${toUnit}`;
+                    formula = `1 ft = 0.3048 m`;
+                    steps += `<div class="step"><strong>Paso 2:</strong> Convertir metros a pies (1 m = 1/0.3048 ft)<br>${formatNumber(inMeters)} m ÷ 0.3048 = ${formatNumber(result)} ft</div>`;
                     break;
                 case 'nm':
                     result = inMeters / 1852;
                     toUnit = 'millas náuticas';
-                    formula = `${formatNumber(input)} ${fromUnit} = ${formatNumber(inMeters)} m / 1852 = ${formatNumber(result)} ${toUnit}`;
+                    formula = `1 nm = 1852 m`;
+                    steps += `<div class="step"><strong>Paso 2:</strong> Convertir metros a millas náuticas (1 m = 1/1852 nm)<br>${formatNumber(inMeters)} m ÷ 1852 = ${formatNumber(result)} nm</div>`;
                     break;
             }
-            
-            resultDiv.innerHTML = `
-                <div class="step"><strong>Fórmula:</strong> ${formula}</div>
-                <div class="final-result">Resultado: <strong>${formatNumber(result)} ${toUnit}</strong></div>
+    
+            stepsDiv.innerHTML = `
+                <div class="step"><strong>Fórmulas:</strong><br>
+                ${from !== 'm' ? `Convertir ${from} a m: ${from === 'ft' ? '1 ft = 0.3048 m' : '1 nm = 1852 m'}<br>` : ''}
+                ${to !== 'm' ? `Convertir m a ${to}: ${to === 'ft' ? '1 m = 1/0.3048 ft' : '1 m = 1/1852 nm'}` : ''}
+                </div>
+                ${steps}
             `;
+    
+            finalResultDiv.innerHTML = `Resultado: <strong>${formatNumber(result)} ${toUnit}</strong>`;
             resultDiv.style.display = "block";
         }
     </script>
