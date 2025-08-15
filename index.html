@@ -21,7 +21,7 @@
             100% { background-position: 0% 50%; }
         }
         h1 {
-            color: #ffffff;
+            color: #250b31;
             text-align: center;
         }
         .calculator {
@@ -198,166 +198,261 @@
     </div>
     
     <div id="isa" class="tab-content">
-        <div class="calculator">
-            <h2>Cálculo de Temperatura ISA</h2>
+        <div class="calculator" style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-left: 5px solid #3498db;">
+            <h2 style="color: #3498db; font-size: 22px; margin-top: 0; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                🌡️ Cálculo de Temperatura ISA
+            </h2>
             
-            <div class="formula-selector">
-                <label for="formula-select">Seleccione la fórmula:</label>
-                <select id="formula-select" onchange="changeISAFormula()">
-                    <option value="altitud">Por altitud</option>
-                    <option value="ambiente">Por temperatura ambiente y desviación</option>
+            <div class="formula-selector" style="margin-bottom: 20px;">
+                <label for="formula-select" style="display: block; margin-bottom: 8px; font-weight: bold; color: #2c3e50;">Seleccione la fórmula:</label>
+                <select id="formula-select" onchange="changeISAFormula()" style="width: 100%; padding: 10px; border: 2px solid #3498db; border-radius: 6px; background: #eaf7ff;">
+                    <option value="altitud">⛰️ Por altitud</option>
+                    <option value="ambiente">📊 Por temperatura ambiente y desviación</option>
                 </select>
             </div>
             
             <div id="formula-altitud" class="formula-option active">
-                <div class="formula">
-                    Temp ISA = 15 - (altitud × 2 / 1000)
+                <div class="formula" style="font-family: 'Courier New', monospace; background: #e8f4fc; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; border: 2px dashed #3498db;">
+                    <strong>Temp ISA (°C) = 15°C - (Altitud en pies × 2 / 1000)</strong>
                 </div>
                 <div class="form-group">
-                    <label for="altitud-isa">Altitud (pies):</label>
-                    <input type="number" id="altitud-isa" placeholder="Ingrese la altitud en pies">
+                    <label for="altitud-isa" style="color: #2c3e50; font-weight: bold;">Altitud (pies):</label>
+                    <input type="number" id="altitud-isa" placeholder="Ej: 5000" style="padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;">
                 </div>
             </div>
             
             <div id="formula-ambiente" class="formula-option">
-                <div class="formula">
-                    Temp ISA = Temperatura Ambiente - Desviación ISA
+                <div class="formula" style="font-family: 'Courier New', monospace; background: #e8f5e9; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; border: 2px dashed #2ecc71;">
+                    <strong>Temp ISA = Temp Ambiente - Desviación ISA</strong>
                 </div>
                 <div class="form-group">
-                    <label for="temperatura-ambiente-isa">Temperatura Ambiente (°C):</label>
-                    <input type="number" id="temperatura-ambiente-isa" placeholder="Ingrese la temperatura ambiente">
+                    <label for="temperatura-ambiente-isa" style="color: #2c3e50; font-weight: bold;">Temperatura Ambiente (°C):</label>
+                    <input type="number" id="temperatura-ambiente-isa" placeholder="Ej: 10" style="padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;">
                 </div>
                 <div class="form-group">
-                    <label for="desviacion-isa">Desviación ISA (°C):</label>
-                    <input type="number" id="desviacion-isa" placeholder="Ingrese la desviación ISA">
+                    <label for="desviacion-isa" style="color: #2c3e50; font-weight: bold;">Desviación ISA (°C):</label>
+                    <input type="number" id="desviacion-isa" placeholder="Ej: +5" style="padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;">
                 </div>
             </div>
             
-            <button onclick="calcularTemperaturaISA()">Calcular</button>
-            <button class="toggle-steps" onclick="toggleSteps('isa-steps')">Mostrar/Ocultar Pasos</button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="calcularTemperaturaISA()" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1; transition: all 0.3s;">
+                    Calcular
+                </button>
+                <button class="toggle-steps" onclick="toggleSteps('isa-steps')" style="background: #2ecc71; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1; transition: all 0.3s;">
+                    Mostrar/Ocultar Pasos
+                </button>
+            </div>
             
-            <div id="result-isa" class="result" style="display: none;">
+            <div id="result-isa" class="result" style="display: none; margin-top: 20px; background: #f8f9fa; border-radius: 8px; padding: 15px; border-left: 4px solid #3498db;">
                 <div id="isa-steps" class="steps hidden"></div>
-                <div id="isa-final-result" class="final-result"></div>
+                <div id="isa-final-result" class="final-result" style="font-size: 18px; color: #3498db; font-weight: bold; text-align: center; margin-top: 10px;"></div>
             </div>
         </div>
     </div>
-    
+
+    <!-- Temperatura Ambiente - Versión Decorada -->
     <div id="ambiente" class="tab-content">
-        <div class="calculator">
-            <h2>Cálculo de Temperatura Ambiente</h2>
-            <div class="formula">
-                Temp Ambiente = Desviación ISA + Temperatura ISA
-            </div>
-            <div class="form-group">
-                <label for="desviacion-ambiente">Desviación ISA (°C):</label>
-                <input type="number" id="desviacion-ambiente" placeholder="Ingrese la desviación ISA">
-            </div>
-            <div class="form-group">
-                <label for="temperatura-isa-ambiente">Temperatura ISA (°C):</label>
-                <input type="number" id="temperatura-isa-ambiente" placeholder="Ingrese la temperatura ISA">
+        <div class="calculator" style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-left: 5px solid #e67e22;">
+            <h2 style="color: #e67e22; font-size: 22px; margin-top: 0; text-align: center; border-bottom: 2px solid #e67e22; padding-bottom: 10px;">
+                🔥 Cálculo de Temperatura Ambiente
+            </h2>
+            
+            <div class="formula" style="font-family: 'Courier New', monospace; background: #fef9e7; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; border: 2px dashed #e67e22;">
+                <strong>Temp Ambiente = Desviación ISA + Temperatura ISA</strong>
             </div>
             
-            <button onclick="calcularTemperaturaAmbiente()">Calcular</button>
-            <button class="toggle-steps" onclick="toggleSteps('ambiente-steps')">Mostrar/Ocultar Pasos</button>
+            <div class="form-group">
+                <label for="desviacion-ambiente" style="color: #2c3e50; font-weight: bold;">Desviación ISA (°C):</label>
+                <input type="number" id="desviacion-ambiente" placeholder="Ej: +5" style="padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;">
+            </div>
+            <div class="form-group">
+                <label for="temperatura-isa-ambiente" style="color: #2c3e50; font-weight: bold;">Temperatura ISA (°C):</label>
+                <input type="number" id="temperatura-isa-ambiente" placeholder="Ej: 5" style="padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;">
+            </div>
             
-            <div id="result-ambiente" class="result" style="display: none;">
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="calcularTemperaturaAmbiente()" style="background: #e67e22; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1; transition: all 0.3s;">
+                    Calcular
+                </button>
+                <button class="toggle-steps" onclick="toggleSteps('ambiente-steps')" style="background: #2ecc71; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1; transition: all 0.3s;">
+                    Mostrar/Ocultar Pasos
+                </button>
+            </div>
+            
+            <div id="result-ambiente" class="result" style="display: none; margin-top: 20px; background: #f8f9fa; border-radius: 8px; padding: 15px; border-left: 4px solid #e67e22;">
                 <div id="ambiente-steps" class="steps hidden"></div>
-                <div id="ambiente-final-result" class="final-result"></div>
+                <div id="ambiente-final-result" class="final-result" style="font-size: 18px; color: #e67e22; font-weight: bold; text-align: center; margin-top: 10px;"></div>
             </div>
         </div>
     </div>
-    
+
+    <!-- Desviación ISA - Versión Decorada -->
     <div id="desviacion" class="tab-content">
-        <div class="calculator">
-            <h2>Cálculo de Desviación ISA</h2>
-            <div class="formula">
-                Desviación ISA = Temperatura Ambiente - Temperatura ISA
-            </div>
-            <div class="form-group">
-                <label for="temperatura-ambiente-desviacion">Temperatura Ambiente (°C):</label>
-                <input type="number" id="temperatura-ambiente-desviacion" placeholder="Ingrese la temperatura ambiente">
-            </div>
-            <div class="form-group">
-                <label for="temperatura-isa-desviacion">Temperatura ISA (°C):</label>
-                <input type="number" id="temperatura-isa-desviacion" placeholder="Ingrese la temperatura ISA">
+        <div class="calculator" style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-left: 5px solid #9b59b6;">
+            <h2 style="color: #9b59b6; font-size: 22px; margin-top: 0; text-align: center; border-bottom: 2px solid #9b59b6; padding-bottom: 10px;">
+                ❄️ Cálculo de Desviación ISA
+            </h2>
+            
+            <div class="formula" style="font-family: 'Courier New', monospace; background: #f5eef8; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; border: 2px dashed #9b59b6;">
+                <strong>Desviación ISA = Temp Ambiente - Temp ISA</strong>
             </div>
             
-            <button onclick="calcularDesviacionISA()">Calcular</button>
-            <button class="toggle-steps" onclick="toggleSteps('desviacion-steps')">Mostrar/Ocultar Pasos</button>
+            <div class="form-group">
+                <label for="temperatura-ambiente-desviacion" style="color: #2c3e50; font-weight: bold;">Temperatura Ambiente (°C):</label>
+                <input type="number" id="temperatura-ambiente-desviacion" placeholder="Ej: 10" style="padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;">
+            </div>
+            <div class="form-group">
+                <label for="temperatura-isa-desviacion" style="color: #2c3e50; font-weight: bold;">Temperatura ISA (°C):</label>
+                <input type="number" id="temperatura-isa-desviacion" placeholder="Ej: 5" style="padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;">
+            </div>
             
-            <div id="result-desviacion" class="result" style="display: none;">
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="calcularDesviacionISA()" style="background: #9b59b6; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1; transition: all 0.3s;">
+                    Calcular
+                </button>
+                <button class="toggle-steps" onclick="toggleSteps('desviacion-steps')" style="background: #2ecc71; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1; transition: all 0.3s;">
+                    Mostrar/Ocultar Pasos
+                </button>
+            </div>
+            
+            <div id="result-desviacion" class="result" style="display: none; margin-top: 20px; background: #f8f9fa; border-radius: 8px; padding: 15px; border-left: 4px solid #9b59b6;">
                 <div id="desviacion-steps" class="steps hidden"></div>
-                <div id="desviacion-final-result" class="final-result"></div>
+                <div id="desviacion-final-result" class="final-result" style="font-size: 18px; color: #9b59b6; font-weight: bold; text-align: center; margin-top: 10px;"></div>
             </div>
         </div>
     </div>
-    
+
+    <!-- Altitud - Versión Decorada -->
     <div id="altitud" class="tab-content">
-        <div class="calculator">
-            <h2>Cálculo de Altitud</h2>
-            <div class="formula">
-                Altitud = ((15 - Tem ISA)/2) × 1000
+        <div class="calculator" style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-left: 5px solid #1abc9c;">
+            <h2 style="color: #1abc9c; font-size: 22px; margin-top: 0; text-align: center; border-bottom: 2px solid #1abc9c; padding-bottom: 10px;">
+                ⛰️ Cálculo de Altitud
+            </h2>
+            
+            <div class="formula" style="font-family: 'Courier New', monospace; background: #e8f8f5; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; border: 2px dashed #1abc9c;">
+                <strong>Altitud (pies) = ((15 - Temp ISA)/2) × 1000</strong>
             </div>
+            
             <div class="form-group">
-                <label for="temperatura-isa-altitud">Temperatura ISA (°C):</label>
-                <input type="number" id="temperatura-isa-altitud" placeholder="Ingrese la temperatura ISA">
+                <label for="temperatura-isa-altitud" style="color: #2c3e50; font-weight: bold;">Temperatura ISA (°C):</label>
+                <input type="number" id="temperatura-isa-altitud" placeholder="Ej: -5" style="padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px;">
             </div>
             
-            <button onclick="calcularAltitud()">Calcular</button>
-            <button class="toggle-steps" onclick="toggleSteps('altitud-steps')">Mostrar/Ocultar Pasos</button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="calcularAltitud()" style="background: #1abc9c; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1; transition: all 0.3s;">
+                    Calcular
+                </button>
+                <button class="toggle-steps" onclick="toggleSteps('altitud-steps')" style="background: #2ecc71; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1; transition: all 0.3s;">
+                    Mostrar/Ocultar Pasos
+                </button>
+            </div>
             
-            <div id="result-altitud" class="result" style="display: none;">
+            <div id="result-altitud" class="result" style="display: none; margin-top: 20px; background: #f8f9fa; border-radius: 8px; padding: 15px; border-left: 4px solid #1abc9c;">
                 <div id="altitud-steps" class="steps hidden"></div>
-                <div id="altitud-final-result" class="final-result"></div>
+                <div id="altitud-final-result" class="final-result" style="font-size: 18px; color: #1abc9c; font-weight: bold; text-align: center; margin-top: 10px;"></div>
             </div>
         </div>
     </div>
     
     <div id="conversiones" class="tab-content">
-        <div class="converter">
-            <h2>Conversión de Temperatura</h2>
-            <div class="form-group conversion-group">
-                <input type="number" id="temp-input" placeholder="Ingrese temperatura">
-                <select id="temp-from">
+        <!-- Conversión de Temperatura - Versión Decorada -->
+        <div class="converter" style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-left: 5px solid #e74c3c;">
+            <h2 style="color: #e74c3c; font-size: 22px; margin-top: 0; text-align: center; border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">
+                🔥 Conversión de Temperatura
+            </h2>
+        
+            <div class="form-group conversion-group" style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                <input type="number" id="temp-input" placeholder="Ej: 100" style="flex: 1; padding: 12px; border: 2px solid #e74c3c; border-radius: 6px;">
+            
+                <select id="temp-from" style="padding: 10px; border: 2px solid #e74c3c; border-radius: 6px; background: #fadbd8;">
                     <option value="c">Celsius (°C)</option>
                     <option value="f">Fahrenheit (°F)</option>
                 </select>
-                <span>a</span>
-                <select id="temp-to">
+            
+                <span style="font-weight: bold; color: #7f8c8d;">a</span>
+            
+                <select id="temp-to" style="padding: 10px; border: 2px solid #e74c3c; border-radius: 6px; background: #fadbd8;">
                     <option value="f">Fahrenheit (°F)</option>
                     <option value="c">Celsius (°C)</option>
                 </select>
-                <button onclick="convertTemperature()">Convertir</button>
-                <button class="toggle-steps" onclick="toggleSteps('temp-steps')">Mostrar/Ocultar Pasos</button>
+            
+                <button onclick="convertTemperature()" style="background: #e74c3c; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; transition: all 0.3s;">
+                    Convertir
+                </button>
             </div>
-            <div id="temp-result" class="result" style="display: none;">
+        
+            <button class="toggle-steps" onclick="toggleSteps('temp-steps')" style="background: #27ae60; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 15px; transition: all 0.3s;">
+                Mostrar/Ocultar Pasos
+            </button>
+        
+            <div id="temp-result" class="result" style="display: none; margin-top: 15px; background: #f9ebea; border-radius: 8px; padding: 15px; border-left: 4px solid #e74c3c;">
                 <div id="temp-steps" class="steps hidden"></div>
-                <div class="final-result"></div>
+                <div class="final-result" style="font-size: 18px; color: #e74c3c; font-weight: bold; text-align: center; margin-top: 10px;"></div>
+            </div>
+        
+            <div style="margin-top: 20px; background: #f5eef8; padding: 15px; border-radius: 8px; border: 1px dashed #9b59b6;">
+                <h4 style="color: #9b59b6; margin-top: 0;">📌 Fórmulas de Conversión</h4>
+                <div style="font-family: 'Courier New', monospace;">
+                    <p>°F = (°C × 9/5) + 32</p>
+                    <p>°C = (°F - 32) × 5/9</p>
+                </div>
             </div>
         </div>
-    
-        <div class="converter">
-            <h2>Conversión de Distancia</h2>
-            <div class="form-group conversion-group">
-                <input type="number" id="dist-input" placeholder="Ingrese distancia">
-                <select id="dist-from">
+
+        <!-- Conversión de Distancia - Versión Decorada -->
+        <div class="converter" style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-left: 5px solid #3498db;">
+            <h2 style="color: #3498db; font-size: 22px; margin-top: 0; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                📏 Conversión de Distancia
+            </h2>
+        
+            <div class="form-group conversion-group" style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                <input type="number" id="dist-input" placeholder="Ej: 1000" style="flex: 1; padding: 12px; border: 2px solid #3498db; border-radius: 6px;">
+            
+                <select id="dist-from" style="padding: 10px; border: 2px solid #3498db; border-radius: 6px; background: #eaf2f8;">
                     <option value="m">Metros (m)</option>
                     <option value="ft">Pies (ft)</option>
                     <option value="nm">Millas Náuticas (nm)</option>
                 </select>
-                <span>a</span>
-                <select id="dist-to">
+            
+                <span style="font-weight: bold; color: #7f8c8d;">a</span>
+            
+                <select id="dist-to" style="padding: 10px; border: 2px solid #3498db; border-radius: 6px; background: #eaf2f8;">
                     <option value="nm">Millas Náuticas (nm)</option>
                     <option value="m">Metros (m)</option>
                     <option value="ft">Pies (ft)</option>
                 </select>
-                <button onclick="convertDistance()">Convertir</button>
-                <button class="toggle-steps" onclick="toggleSteps('dist-steps')">Mostrar/Ocultar Pasos</button>
+            
+                <button onclick="convertDistance()" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; transition: all 0.3s;">
+                    Convertir
+                </button>
             </div>
-            <div id="dist-result" class="result" style="display: none;">
+        
+            <button class="toggle-steps" onclick="toggleSteps('dist-steps')" style="background: #27ae60; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 15px; transition: all 0.3s;">
+                Mostrar/Ocultar Pasos
+            </button>
+        
+            <div id="dist-result" class="result" style="display: none; margin-top: 15px; background: #ebf5fb; border-radius: 8px; padding: 15px; border-left: 4px solid #3498db;">
                 <div id="dist-steps" class="steps hidden"></div>
-                <div class="final-result"></div>
+                <div class="final-result" style="font-size: 18px; color: #3498db; font-weight: bold; text-align: center; margin-top: 10px;"></div>
+            </div>
+        
+            <div style="margin-top: 20px; background: #e8f8f5; padding: 15px; border-radius: 8px; border: 1px dashed #1abc9c;">
+                <h4 style="color: #1abc9c; margin-top: 0;">📌 Factores de Conversión</h4>
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <tr style="border-bottom: 1px solid #d5f5e3;">
+                        <td style="padding: 8px; font-weight: bold;">1 metro</td>
+                        <td style="padding: 8px;">= 3.28084 pies</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #d5f5e3;">
+                        <td style="padding: 8px; font-weight: bold;">1 pie</td>
+                        <td style="padding: 8px;">= 0.3048 metros</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; font-weight: bold;">1 milla náutica</td>
+                        <td style="padding: 8px;">= 1852 metros</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
